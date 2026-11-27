@@ -25,3 +25,5 @@ temp/
 .vscode/
 .DS_Store
 Thumbs.db
+# Local evaluation reports containing document content
+/backend/evaluation/*results.json
