@@ -1,4 +1,3 @@
-
 import logging
 from typing import Annotated
 
@@ -6,6 +5,8 @@ from database import get_documents
 from documents import MAX_FILE_SIZE, process_document, save_document
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from indexing import index_document
+from rag import answer_question
+from schemas import ChatRequest
 
 logger = logging.getLogger(__name__)
 
@@ -125,3 +126,31 @@ def upload_documents(files: Annotated[list[UploadFile], File()]):
 def list_documents():
     """Return the list of documents stored in the database."""
     return {"documents": get_documents()}
+
+
+@app.post("/api/chat")
+def chat(request: ChatRequest):
+    """Answer a question using indexed document sources."""
+
+    # Convert UUID objects into strings for the database query.
+    document_ids = None
+
+    if request.document_ids is not None:
+        document_ids = [
+            str(document_id)
+            for document_id in request.document_ids
+        ]
+
+    try:
+        return answer_question(
+            question=request.question,
+            document_ids=document_ids
+        )
+
+    except Exception:
+        logger.exception("Failed to answer document question")
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate an answer"
+        )

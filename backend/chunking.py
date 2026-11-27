@@ -1,4 +1,3 @@
-
 import tiktoken
 
 # Default chunking configuration.
