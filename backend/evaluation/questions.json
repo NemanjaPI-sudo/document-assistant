@@ -1,0 +1,182 @@
+[
+  {
+    "category": "direct_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Class diagram, Use-case diagram, Activity diagram.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 2
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q01",
+    "question": "Koje vrste UML dijagrama se obrađuju na ovom bloku?"
+  },
+  {
+    "category": "direct_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Ulje na platnu, akvarel, skulptura i fotografija.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 8
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q02",
+    "question": "Koje vrste eksponata postoje u galeriji?"
+  },
+  {
+    "category": "direct_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Do 10 sala.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 14
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q03",
+    "question": "Koliko sala može imati jedan bioskop?"
+  },
+  {
+    "category": "multiple_facts",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Lično, preko telefona ili preko Interneta.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 14
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q04",
+    "question": "Na koje načine klijenti mogu rezervisati sedišta u bioskopu?"
+  },
+  {
+    "category": "consistency",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Pregled kataloga usluga, plaćanje tretmana i zakazivanje novog tretmana.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 26
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q05",
+    "question": "Koje funkcionalnosti klijent može da koristi u primeru frizerskog salona?"
+  },
+  {
+    "category": "direct_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Listu zaposlenih.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 26
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q06",
+    "question": "Šta menadžer frizerskog salona može da pregleda?"
+  },
+  {
+    "category": "direct_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": "Dijagrami sekvenci i kolaboracije.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 28
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q07",
+    "question": "Koji UML dijagrami se obrađuju u sledećem bloku?"
+  },
+  {
+    "category": "docx",
+    "documents": [
+      "test.docx"
+    ],
+    "expected_answer": "Performanse, mogućnost izmene, bezbednost i testabilnost.",
+    "expected_sources": [
+      {
+        "filename": "test.docx",
+        "page_number": 9
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q08",
+    "question": "Koji su atributi kvaliteta softvera?"
+  },
+  {
+    "category": "multi_document",
+    "documents": [
+      "Vezba 4 - UML.pdf",
+      "test.docx"
+    ],
+    "expected_answer": "Dijagrami klasa, slučajeva korišćenja i aktivnosti. Atributi kvaliteta uključuju performanse, mogućnost izmene, bezbednost i testabilnost.",
+    "expected_sources": [
+      {
+        "filename": "Vezba 4 - UML.pdf",
+        "page_number": 2
+      },
+      {
+        "filename": "test.docx",
+        "page_number": 9
+      }
+    ],
+    "expected_status": "answered",
+    "id": "Q09",
+    "question": "Koje vrste UML dijagrama se obrađuju na vežbama i koji su atributi kvaliteta softvera?"
+  },
+  {
+    "category": "no_answer",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": null,
+    "expected_sources": [],
+    "expected_status": "insufficient_information",
+    "id": "Q10",
+    "question": "Koji je glavni grad Australije?"
+  },
+  {
+    "category": "hallucination",
+    "documents": [
+      "Vezba 4 - UML.pdf"
+    ],
+    "expected_answer": null,
+    "expected_sources": [],
+    "expected_status": "insufficient_information",
+    "id": "Q11",
+    "question": "Koliko zaposlenih ima frizerski salon i kolika je cena šišanja?"
+  },
+  {
+    "category": "empty_selection",
+    "documents": [],
+    "expected_answer": null,
+    "expected_sources": [],
+    "expected_status": "insufficient_information",
+    "id": "Q12",
+    "question": "Koji su atributi kvaliteta softvera?"
+  }
+]
