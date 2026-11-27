@@ -1,20 +1,27 @@
+
+# Local development plan
 /Development plan/
 
+# Environment variables and sensitive credentials
 .env
 .env.*
 !.env.example
 
+# Python virtual environment and cache files
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 
+# Frontend dependencies and build output
 node_modules/
 dist/
 
+# Local uploads and temporary files
 uploads/
 temp/
 
+# IDE configuration and operating system files
 .vscode/
 .DS_Store
 Thumbs.db

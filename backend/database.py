@@ -1,30 +1,50 @@
+
 import os
 
 from dotenv import load_dotenv
 
 from supabase import create_client
 
+# Load environment variables from the .env file.
 load_dotenv()
 
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_SECRET_KEY")
 
+# Stop initialization if the required configuration is missing.
 if not supabase_url or not supabase_key:
     raise RuntimeError("Missing Supabase configuration")
 
+# Initialize the Supabase client for database and storage operations.
 supabase = create_client(supabase_url, supabase_key)
 
-def create_document(document):
+
+# Document database operations
+
+def create_document(document: dict) -> dict:
+    """Insert a new document and return the created record."""
     response = supabase.table("documents").insert(document).execute()
-    return response.data[0]
+
+    if not response.data:
+        raise RuntimeError("Failed to create document")
+
+    created_document = response.data[0]
+
+    # Ensure the database returns a valid document record.
+    if not isinstance(created_document, dict):
+        raise TypeError("Invalid database response")
+
+    return created_document
 
 
 def get_documents():
+    """Retrieve all documents from the database."""
     response = supabase.table("documents").select("*").execute()
     return response.data
 
 
 def update_document(document_id, data):
+    """Update a document using its unique ID."""
     response = supabase.table("documents").update(data).eq(
         "id", document_id
     ).execute()
@@ -32,17 +52,25 @@ def update_document(document_id, data):
 
 
 def delete_document(document_id):
+    """Delete a document and its related chunks from the database."""
+    # Related chunks are automatically removed by ON DELETE CASCADE.
+    # Files in storage must be deleted separately.
     response = supabase.table("documents").delete().eq(
         "id", document_id
     ).execute()
     return response.data
 
+
+# Document chunk operations
+
 def create_chunks(chunks):
+    """Insert multiple document chunks into the database."""
     response = supabase.table("document_chunks").insert(chunks).execute()
     return response.data
 
 
 def get_document_chunks(document_id):
+    """Retrieve all chunks belonging to a specific document."""
     response = supabase.table("document_chunks").select("*").eq(
         "document_id", document_id
     ).execute()
@@ -50,12 +78,17 @@ def get_document_chunks(document_id):
 
 
 def delete_document_chunks(document_id):
+    """Delete all chunks belonging to a specific document."""
     response = supabase.table("document_chunks").delete().eq(
         "document_id", document_id
     ).execute()
     return response.data
 
+
+# Supabase Storage operations
+
 def upload_file(path, file_content, content_type):
+    """Upload a file to the private documents bucket."""
     return supabase.storage.from_("documents").upload(
         path,
         file_content,
@@ -64,13 +97,22 @@ def upload_file(path, file_content, content_type):
 
 
 def download_file(path):
+    """Download a file from storage using its path."""
     return supabase.storage.from_("documents").download(path)
 
 
 def delete_file(path):
+    """Remove a file from the documents bucket."""
     return supabase.storage.from_("documents").remove([path])
 
+
+# Vector search operations
+
 def match_chunks(query_embedding, match_count=8, document_ids=None):
+    """Find document chunks most similar to the query embedding."""
+
+    # Call the PostgreSQL function that performs vector similarity search.
+    # The document IDs parameter allows searching specific documents.
     response = supabase.rpc(
         "match_document_chunks",
         {
