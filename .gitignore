@@ -1,0 +1,20 @@
+Document Assitant.md
+
+.env
+.env.*
+!.env.example
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+node_modules/
+dist/
+
+uploads/
+temp/
+
+.vscode/
+.DS_Store
+Thumbs.db
