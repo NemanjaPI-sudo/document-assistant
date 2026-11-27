@@ -37,7 +37,6 @@ def create_document(document: dict) -> dict:
     return created_document
 
 
-
 def get_documents() -> list[dict]:
     """Retrieve all documents from the database."""
     response = supabase.table("documents").select("*").execute()
@@ -56,6 +55,26 @@ def get_documents() -> list[dict]:
 
     return documents
 
+
+def get_document(document_id: str) -> dict | None:
+    """Retrieve a single document using its unique ID."""
+    response = supabase.table("documents").select("*").eq(
+        "id", document_id
+    ).execute()
+
+    if not isinstance(response.data, list):
+        raise TypeError("Invalid document response")
+
+    # Return None when the requested document does not exist.
+    if not response.data:
+        return None
+
+    document = response.data[0]
+
+    if not isinstance(document, dict):
+        raise TypeError("Invalid document record")
+
+    return document
 
 
 def update_document(document_id, data):
@@ -84,7 +103,6 @@ def create_chunks(chunks):
     return response.data
 
 
-
 def get_document_chunks(document_id: str) -> list[dict]:
     """Retrieve all chunks belonging to a specific document."""
     response = supabase.table("document_chunks").select("*").eq(
@@ -104,7 +122,6 @@ def get_document_chunks(document_id: str) -> list[dict]:
         chunks.append(item)
 
     return chunks
-
 
 
 def delete_document_chunks(document_id):
@@ -137,7 +154,6 @@ def delete_file(path):
 
 
 # Vector search operations
-
 
 def match_chunks(
     query_embedding: list[float],

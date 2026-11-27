@@ -1,9 +1,14 @@
-import logging
-from typing import Annotated
 
-from database import get_documents
+import logging
+from pathlib import Path
+from typing import Annotated
+from urllib.parse import quote
+from uuid import UUID
+
+from database import download_file, get_document, get_documents
 from documents import MAX_FILE_SIZE, process_document, save_document
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import Response
 from indexing import index_document
 from rag import answer_question
 from schemas import ChatRequest
@@ -65,7 +70,6 @@ def upload_documents(files: Annotated[list[UploadFile], File()]):
                 # Continue processing the remaining files.
                 continue
 
-
             try:
                 # Index the document using the already extracted pages.
                 chunk_count = index_document(
@@ -96,7 +100,6 @@ def upload_documents(files: Annotated[list[UploadFile], File()]):
                 "status": "ready"
             })
 
-
         except ValueError as error:
             # Return a specific message for document validation errors.
             results.append({
@@ -126,6 +129,63 @@ def upload_documents(files: Annotated[list[UploadFile], File()]):
 def list_documents():
     """Return the list of documents stored in the database."""
     return {"documents": get_documents()}
+
+
+@app.get("/api/documents/{document_id}/preview")
+def preview_document(document_id: UUID):
+    """Return the PDF preview of a document."""
+
+    try:
+        # Retrieve trusted document metadata from the database.
+        document = get_document(str(document_id))
+
+        if document is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Document not found"
+            )
+
+        # Use the PDF preview created during document processing.
+        preview_path = document.get("preview_path")
+
+        if not preview_path:
+            raise HTTPException(
+                status_code=404,
+                detail="Document preview not available"
+            )
+
+        # Download the PDF from the private storage bucket.
+        pdf_content = download_file(preview_path)
+
+        # Use a PDF extension even when the original file is DOCX.
+        filename = Path(document["filename"]).stem + ".pdf"
+
+        # Encode the filename to support spaces and Unicode characters.
+        encoded_filename = quote(filename, safe="")
+
+        # Display the PDF directly in the browser.
+        return Response(
+            content=pdf_content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": (
+                    f"inline; filename*=UTF-8''{encoded_filename}"
+                ),
+                "Cache-Control": "private, no-store",
+                "X-Content-Type-Options": "nosniff"
+            }
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        logger.exception("Failed to retrieve document preview")
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve document preview"
+        )
 
 
 @app.post("/api/chat")
