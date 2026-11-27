@@ -37,10 +37,25 @@ def create_document(document: dict) -> dict:
     return created_document
 
 
-def get_documents():
+
+def get_documents() -> list[dict]:
     """Retrieve all documents from the database."""
     response = supabase.table("documents").select("*").execute()
-    return response.data
+
+    # Validate the database response.
+    if not isinstance(response.data, list):
+        raise TypeError("Invalid documents response")
+
+    documents = []
+
+    for item in response.data:
+        if not isinstance(item, dict):
+            raise TypeError("Invalid document record")
+
+        documents.append(item)
+
+    return documents
+
 
 
 def update_document(document_id, data):
@@ -69,12 +84,27 @@ def create_chunks(chunks):
     return response.data
 
 
-def get_document_chunks(document_id):
+
+def get_document_chunks(document_id: str) -> list[dict]:
     """Retrieve all chunks belonging to a specific document."""
     response = supabase.table("document_chunks").select("*").eq(
         "document_id", document_id
     ).execute()
-    return response.data
+
+    # Validate the database response.
+    if not isinstance(response.data, list):
+        raise TypeError("Invalid chunks response")
+
+    chunks = []
+
+    for item in response.data:
+        if not isinstance(item, dict):
+            raise TypeError("Invalid chunk record")
+
+        chunks.append(item)
+
+    return chunks
+
 
 
 def delete_document_chunks(document_id):
@@ -108,11 +138,15 @@ def delete_file(path):
 
 # Vector search operations
 
-def match_chunks(query_embedding, match_count=8, document_ids=None):
+
+def match_chunks(
+    query_embedding: list[float],
+    match_count: int = 8,
+    document_ids: list[str] | None = None
+) -> list[dict]:
     """Find document chunks most similar to the query embedding."""
 
-    # Call the PostgreSQL function that performs vector similarity search.
-    # The document IDs parameter allows searching specific documents.
+    # Call our PostgreSQL vector similarity search function.
     response = supabase.rpc(
         "match_document_chunks",
         {
@@ -122,4 +156,16 @@ def match_chunks(query_embedding, match_count=8, document_ids=None):
         }
     ).execute()
 
-    return response.data
+    # Validate the database response before returning search results.
+    if not isinstance(response.data, list):
+        raise TypeError("Invalid search response")
+
+    results = []
+
+    for item in response.data:
+        if not isinstance(item, dict):
+            raise TypeError("Invalid search result")
+
+        results.append(item)
+
+    return results

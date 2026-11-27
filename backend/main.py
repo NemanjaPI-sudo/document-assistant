@@ -5,6 +5,7 @@ from typing import Annotated
 from database import get_documents
 from documents import MAX_FILE_SIZE, process_document, save_document
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from indexing import index_document
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ def health():
 
 @app.post("/api/documents")
 def upload_documents(files: Annotated[list[UploadFile], File()]):
-    """Process and save uploaded PDF and DOCX documents."""
+    """Process, save and index uploaded PDF and DOCX documents."""
 
     # Limit the number of files per request.
     if len(files) > 10:
@@ -63,15 +64,37 @@ def upload_documents(files: Annotated[list[UploadFile], File()]):
                 # Continue processing the remaining files.
                 continue
 
-            # Return document metadata without raw text or file content.
+
+            try:
+                # Index the document using the already extracted pages.
+                chunk_count = index_document(
+                    document["id"],
+                    processed["pages"]
+                )
+
+            except Exception:
+                logger.exception("Failed to index uploaded document")
+
+                results.append({
+                    "id": document["id"],
+                    "filename": filename,
+                    "status": "failed",
+                    "error": "Failed to index document"
+                })
+
+                continue
+
+            # Return metadata after successful indexing.
             results.append({
                 "id": document["id"],
                 "filename": document["filename"],
                 "file_type": document["file_type"],
                 "page_count": document["page_count"],
                 "empty_pages": processed["empty_pages"],
-                "status": document["status"]
+                "chunk_count": chunk_count,
+                "status": "ready"
             })
+
 
         except ValueError as error:
             # Return a specific message for document validation errors.
